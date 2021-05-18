@@ -9,6 +9,293 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introducción
+# 1. Introducción
 
-#
+* Definición DANE del índice asignado (ecuación debidamente explicada) dando ejemplo interpretativo de sus valores
+
+* Definición del dominio o clasificación industrial al que está relacionada la serie. 
+
+* Resultados alcanzados en el trabajo 1
+
+- Cuáles modelos globales y locales que fueron propuestos (debe dar las ecuaciones teóricas)
+
+- Cuál es el mejor modelo global, qué logró explicar este modelo en relación a los patrones que fueron observados sobre la serie
+
+- Resultó mejor el ajuste y pronóstico global vs. lo local (cuál fue el mejor local entre Holt-Winters y combinación del filtro de la descomposición con loess) y por qué.
+
+# 2. Análisis descriptivo de la serie, modelo global asignado y sus resultados:
+
+a) Presente y analice brevemente la gráfica de la serie (y su logaritmo natural si la serie es multiplicativa)
+indicando los patrones observables de tendencia, estacionalidad, varianza, ciclos. Grafique y analice además
+la ACF de la serie (para el caso multiplicativo sólo presente y analice la ACF del logaritmo natural) y concluya en términos de estacionariedad o no y por qué, contrastando con lo que a partir de la gráfica de la serie se concluye al respecto.
+
+```{r}
+Datos20=read.table("anex-EMMET-dic2019-Fabricacion de otros productos quimicos (1).csv",header=T,sep=";",skip=14,dec=",",colClasses=c(rep("NULL",4),"numeric",rep("NULL",6)))
+Datos20=ts(Datos20,freq=12,start=c(2001,1))
+```
+
+```{r}
+plot(Datos20, lwd=1.5, xlab="Tiempo")
+grid()
+```
+```{r}
+require(forecast)
+```
+
+
+```{r}
+acf(Datos20,lag.max=36,ci.type="ma",col=4,ci.col=2)
+```
+
+
+b) Para el modelo de regresión global señalado en la Tabla 1
+
+* la ecuación teórica con sus supuestos 
+
+$$\text{Modelo cuadrático estacional con indicadoras, mes de referencia diciembre}\\
+Y_t=\beta_0+\beta_1t+\beta_2t^2+\sum_{i=1}^{11}\delta_iI_{i,t}+E_t, ~~~ \{E_t\}_{t\in Z^+} \text{un RB} \sim N(0, \sigma^2)$$
+
+
+
+* con la estrategia de validación cruzada usando la misma longitud n = 216 de ajuste del trabajo anterior ajuste nuevamente este modelo y reporte los resultados de ajuste
+
+```{r}
+m <- 12 # numero de periodos a pronosticar dentro de la muestra
+n <-length(Datos20)-m # tamaño de la muestra para el ajuste
+t <- 1:n #Indice de tiempo en los periodos de ajuste
+
+# Datos para el ajuste:
+
+yt <- ts(Datos20[t], frequency = 12, start=c(2001, 1))
+
+# Creación de las variables indicadoras para los datos de muestra
+
+mes <- seasonaldummy(yt) #Matriz con las 11 primeras variables Indicadoras mes
+
+#Separando una a una las 11 variables indicadoras
+
+I1 <- mes[,1]
+I2 <- mes[,2]
+I3 <- mes[,3]
+I4 <- mes[,4]
+I5 <- mes[,5]
+I6 <- mes[,6]
+I7 <- mes[,7]
+I8 <- mes[,8]
+I9 <- mes[,9]
+I10 <- mes[,10]
+I11 <- mes[,11]
+
+# Creación de las variables indicadoras para los datos de validación cruzada
+
+tnuevo <- (n+1):length(Datos20)
+ytnuevo <- ts(Datos20[tnuevo], frequency = 12, start = c(2019, 1))
+
+
+mesnuevo <- seasonaldummy(yt, h=12)
+#Separando una a una las 11 indicadoras para los tiempos de pron?stico
+I1n=mesnuevo[,1]
+I2n=mesnuevo[,2]
+I3n=mesnuevo[,3]
+I4n=mesnuevo[,4]
+I5n=mesnuevo[,5]
+I6n=mesnuevo[,6]
+I7n=mesnuevo[,7]
+I8n=mesnuevo[,8]
+I9n=mesnuevo[,9]
+I10n=mesnuevo[,10]
+I11n=mesnuevo[,11]
+
+## Ajuste del Modelo cuadrático estacional con indicadoras
+
+mod1 <- lm(yt~t+I(t^2)+I1+I2+I3+I4+I5+I6+I7+I8+I9+I10+I11)
+```
+
+
+- tabla de parámetros estimados
+
+$$\begin{array}{| c | c | c | c| c |}
+\hline
+Parametro&Estimación&Error~Estándar&T_0&P(|T_{202}|>|T_0|)\\
+\hline
+\beta_0&35.8242551&1.2250562&29.242949&0.0000000\\
+\beta_1&0.1319807&0.0174478&7.564309&0.0000000\\
+\beta_2&0.0007051&0.0000779&9.055350&0.0000000\\
+\delta_1&-3.1817818&1.3273503&-2.397093&0.0174368\\
+\delta_2&5.3069465&1.3272009&3.998601&0.0000893\\
+\delta_3&12.0220423&1.3270660&9.059114&0.0000000\\
+\delta_4&7.2690612&1.3269454&5.478041&0.0000001\\
+\delta_5&12.1146698&1.3268389&9.130475&0.0000000\\
+\delta_6&9.8255350&1.3267465&7.405736&0.0000000\\
+\delta_7&8.4294343&1.3266681&6.353838&0.0000000\\
+\delta_8&9.0930346&1.3266037&6.854372&0.0000000\\
+\delta_9&12.5163357&1.3265533&9.435230&0.0000000\\
+\delta_{10}&10.5493377&1.3265171&7.952659&0.0000000\\
+\delta_{11}&8.9475962&1.3264952&6.745291&0.0000000\\
+\hline
+\end{array}$$
+
+- medidas de ajuste
+
+```{r}
+# Calculo del AIC y BIC
+
+#Creando funci?n usuario crit.inf.resid() para calcular C^*_n(p)
+crit.inf.resid <- function(residuales,n.par,AIC="TRUE"){
+if(AIC=="TRUE"){
+#Calcula AIC
+CI=log(mean(residuales^2))+2*n.par/length(residuales)
+}
+if(AIC=="FALSE"){
+#Calcula BIC
+CI=log(mean(residuales^2))+n.par*log(length(residuales))/length(residuales)
+}
+CI
+}  
+```
+
+modelo 1
+```{r}
+resmod1.orig <- residuals(mod1) #seudo-residuos en la escala original. Usados solo para calcular AIC y BIC
+
+npar1 <- length(coef(mod1)[coef(mod1)!=0]) #numero parametros modelo 1
+
+AIC1 <- exp(crit.inf.resid(resmod1.orig,n.par=npar1))
+BIC1 <- exp(crit.inf.resid(resmod1.orig ,n.par=npar1, AIC="FALSE"))
+```
+
+$$\begin{array}{| c | c | c |}
+\hline
+p&AIC&BIC\\
+\hline
+14&16.85948&20.98234\\
+\hline
+\end{array}$$
+
+- gráfico del ajuste
+
+# Valores ajustados de los modelos 
+
+```{r}
+mod1_ajust <- ts(fitted(mod1), start  = c(2001,1), frequency = 12)
+```
+
+
+```{r}
+plot(Datos20)
+lines(mod1_ajust, col=2, lwd=2)
+legend("topleft", legend = c("Original", "Ajuste del modelo1"), lty=1, col=c(1,2))
+
+```
+
+
+
+* pronósticos
+
+- Ecuación de pronóstico
+
+- la tabla de pronósticos
+
+$$\begin{array}{| c | c | c | c| c |}
+\hline
+Periodo&L&Pronósticos&Lim.Inf&Lim.Sup\\
+\hline
+Ene~2019&1&94.4852&86.27520&102.6952\\
+Feb~2019&2&103.4126&95.19741&111.6279\\
+Mar~2019&3&110.5678&102.34725&118.7884\\
+Abr~2019&4&106.2564&98.03028&114.4825\\
+May~2019&5&111.5449&103.31316&119.7767\\
+Jun~2019&6&109.7001&101.46257&117.9377\\
+Jul~2019&7&108.7498&100.50627&116.9933\\
+Ago~2019&8&109.8606&101.61094&118.1102\\
+Sep~2019&9&113.7324&105.47658&121.9883\\
+Oct~2019&10&112.2154&103.95319&120.4777\\
+Nov~2019&11&111.0651&102.79632&119.3338\\
+Dic~2019&12&102.5703&94.29486&110.8457\\
+\hline
+\end{array}$$
+
+- medidas de cobertura amplitud media de los I.P y medidas MAE, MAPE y RMSE 
+
+$$\begin{array}{| c | c | c | c| c |}
+\hline
+RMSE & MAE & MAPE & Amplitud & Cobertura\\
+\hline
+3.153708&2.366654&2.338060&16.48278&100\\
+\hline
+\end{array}$$
+
+* Conclusión breve sobre la calidad del ajuste y de los pronósticos con este modelo
+
+# 3. Evaluación de supuesto de ruido blanco e identificación de procesos estocásticos sobre los errores estructurales del modelo global
+
+a) Validación de supuestos: Guarde los residuos estructurales $\hat{E}_t$ en la escala en que ajustó la serie. Analice inicialmente las gráficas de estos residuales en términos de los supuestos sobre los errores Et de media constante en cero, varianza constante y determine si hay ciclos evidentes no explicados o rachas en signos ±, qué concluye frente a la existencia de estos patrones. 
+
+```{r}
+residuales <- residuals(mod1)
+```
+
+```{r}
+plot(residuales, type = "l")
+abline(h = 0)
+```
+
+Realice las Pruebas de incorrelación con: 
+
+- Ljung-Box
+
+```{r}
+#DEFINIENDO FUNCION USUARIO PARA TESTES BOX-PIERCE Y LJUNG-BOX
+BP.LB.test=function(serie,maxlag,type="Box"){
+aux=floor(maxlag/6); X.squared=c(rep(NA,aux))
+df=c(rep(NA,aux)); p.value=c(rep(NA,aux))
+for(i in 1:aux){
+test=Box.test(serie,lag=(6*i),type=type)
+X.squared[i]=test[[1]]; df[i]=test[[2]]
+p.value[i]=test[[3]]
+}
+lag=6*c(1:aux)
+teste=as.data.frame(cbind(X.squared,df,p.value))
+rownames(teste)=lag; teste
+}
+
+BP.LB.test(residuals(mod1),maxlag=36,type="Ljung")
+```
+
+- Durbin-Watson
+
+```{r}
+require(car)
+#DEFINIENDO FUNCION USUARIO PARA TEST DURBIN-WATSON
+pruebaDW1=function(modelo){
+dwneg=durbinWatsonTest(modelo,max.lag=1,method="normal",alternative="negative")
+dwpos=durbinWatsonTest(modelo,max.lag=1,method="normal",alternative="positive")
+
+res=data.frame(1,dwneg$r,dwneg$dw,dwpos$p,dwneg$p)
+names(res)=c("lag","rho estimado","Estadístico D-W",
+"VP rho>0","VP rho<0")
+res
+}
+
+pruebaDW1(mod1)
+```
+
+
+- gráficas de la ACF y PACF con bandas de Bartlett.
+
+```{r}
+acf(residuales,lag.max=36,ci.type="ma",col=4,ci.col=2)
+```
+
+```{r}
+pacf(residuales,lag.max=36,col=4,ci.col=2)
+```
+
+Concluya sobre si los errores estructurales Et son ruido blanco o no y en este último caso, evalúe si por lo menos son estacionarios con media cero.
+
+
+
+
+
+
+
