@@ -205,11 +205,11 @@ mod1_ajust <- ts(fitted(mod1), start  = c(2001,1), frequency = 12)
 ```
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 plot(Datos20)
 lines(mod1_ajust, col=2, lwd=2)
-legend("topleft", legend = c("Original", "Ajuste del modelo1"), lty=1, col=c(1,2))
-
+legend("topleft", legend = c("Original", "Ajuste"), lty=1, col=c(1,2))
+grid()
 ```
 
 
