@@ -2,7 +2,7 @@
 title: "Trabajo 2- Estadística 3"
 author: "Cristina Mercedes Ortega Benavides"
 date: "18/5/2021"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -31,20 +31,27 @@ la ACF de la serie (para el caso multiplicativo sólo presente y analice la ACF 
 
 ```{r}
 Datos20=read.table("anex-EMMET-dic2019-Fabricacion de otros productos quimicos (1).csv",header=T,sep=";",skip=14,dec=",",colClasses=c(rep("NULL",4),"numeric",rep("NULL",6)))
+
 Datos20=ts(Datos20,freq=12,start=c(2001,1))
 ```
 
-```{r}
-plot(Datos20, lwd=1.5, xlab="Tiempo")
+
+
+```{r, fig.height=5, fig.width=6}
+plot(Datos20, lwd=2, xlab="Tiempo", ylab = "Producción nominal", col = "#d8576b")
 grid()
+title(main = "Serie")
 ```
 ```{r}
 require(forecast)
 ```
 
 
-```{r}
-acf(Datos20,lag.max=36,ci.type="ma",col=4,ci.col=2)
+```{r, fig.height=5, fig.width=6}
+par(bg='gray98')
+acf(Datos20,lag.max=36,ci.type="ma",col="cyan4", ci.col=2, lwd=2, ci.lwd=2)
+title(main = 'Hola')
+grid()
 ```
 
 
@@ -134,6 +141,23 @@ Parametro&Estimación&Error~Estándar&T_0&P(|T_{202}|>|T_0|)\\
 \delta_{11}&8.9475962&1.3264952&6.745291&0.0000000\\
 \hline
 \end{array}$$
+
+```{r}
+summary(mod1)
+```
+
+
+```{r}
+require(kableExtra)
+
+require(broom)
+
+# tidy(summary(mod1)) %>% 
+#   kbl() %>% 
+#   kable_classic()
+
+```
+
 
 - medidas de ajuste
 
