@@ -261,7 +261,8 @@ residuales <- residuals(mod1)
 
 ```{r}
 plot(residuales, type = "l")
-abline(h = 0)
+abline(h=c(-2*summary(mod1)$sigma, 0, 2*summary(mod1)$sigma), col=2)
+abline(h = 0, col=2)
 ```
 
 Realice las Pruebas de incorrelación con: 
@@ -307,12 +308,12 @@ pruebaDW1(mod1)
 
 - gráficas de la ACF y PACF con bandas de Bartlett.
 
-```{r}
-acf(residuales,lag.max=36,ci.type="ma",col=4,ci.col=2)
+```{r, fig.height=5, fig.width=6}
+acf(residuales,lag.max=36,ci.type="ma",col="cyan4",ci.col=2, lwd=2)
 ```
 
-```{r}
-pacf(residuales,lag.max=36,col=4,ci.col=2)
+```{r, fig.height=5, fig.width=6}
+pacf(residuales,lag.max=36,col="cyan4",ci.col=2, lwd=2)
 ```
 
 Concluya sobre si los errores estructurales Et son ruido blanco o no y en este último caso, evalúe si por lo menos son estacionarios con media cero.
