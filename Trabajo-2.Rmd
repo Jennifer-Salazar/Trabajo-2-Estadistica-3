@@ -49,7 +49,7 @@ require(forecast)
 
 ```{r, fig.height=5, fig.width=6}
 par(bg='gray98')
-acf(Datos20,lag.max=36,ci.type="ma",col="cyan4", ci.col=2, lwd=2, ci.lwd=2)
+acf(Datos20,lag.max=36,ci.type="ma",col="cyan4", ci.col=2, lwd=2)
 title(main = 'Hola')
 grid()
 ```
@@ -267,7 +267,17 @@ abline(h = 0, col=2)
 
 Realice las Pruebas de incorrelación con: 
 
-- Ljung-Box
+- Ljung-Box 
+
+> Prueba de hipótesis
+
+$$H_0 : \rho(1) = \rho(2) = \rho(3) = \ldots = \rho(m) = 0 $$
+$$H_1: \rho(k) \neq 0, \text{ para al menos un } k= 1, 2, … , m$$
+
+> Estadístico de prueba
+
+$$Q_{LB} = 216 (216+2) \sum_{k=L}^m \frac{\widehat{\rho^2}(k)}{216-k} \sim \text{aprox } \chi^2_m$$
+
 
 ```{r}
 #DEFINIENDO FUNCION USUARIO PARA TESTES BOX-PIERCE Y LJUNG-BOX
@@ -284,7 +294,13 @@ teste=as.data.frame(cbind(X.squared,df,p.value))
 rownames(teste)=lag; teste
 }
 
-BP.LB.test(residuals(mod1),maxlag=36,type="Ljung")
+LB_result <- BP.LB.test(residuals(mod1),maxlag=36,type="Ljung")
+
+
+cbind("m" = seq(6, 36, 6), LB_result)  %>% 
+  kbl(col.names = c('$m$', '$Q_{LB}$', '$gl$', '$p(χ^2_{m} > Q_{LB})$'), row.names = F) %>% 
+  kable_classic(full_width = F) 
+
 ```
 
 - Durbin-Watson
@@ -302,8 +318,37 @@ names(res)=c("lag","rho estimado","Estadístico D-W",
 res
 }
 
-pruebaDW1(mod1)
+pruebaDW1(mod1) 
+
+
+xtable::xtable(pruebaDW1(mod1))
+
 ```
+
+
+
+$$
+\begin{array}{cccccc}
+  \hline
+ & k & \widehat{\rho}(1) & \text{Estadístico } d_1 & P(DW_1 < d1) & P(DW_1 > d1) \\ 
+  \hline
+ & 1 & 0.41 & 1.17 & 0.00 & 1.00 \\ 
+   \hline
+\end{array}
+$$
+
+> Modelo Durbin Watson
+
+$$\text{Modelo Durbin Watson}\\
+Y_t=  \sum_{j=1}^2 \beta_jt^j+\sum_{i=1}^{11}\delta_iI_{i,t}+E_t, \text{ con } E_t = \phi_1E_{t-1} + a_t$$
+
+$$|\phi_1|<1  \text{ y }  \{a_t\}_{t\in Z^+} \text{un RB} \sim N(0, \sigma_a^2)$$
+* Como $d_1 < 2$, por lo tanto el test a realizar es:
+
+$$H_0: \rho(1) = corr(E_t, E_{t+1}) = \phi_1 = 0 \text{ vs } H_1: \rho(1) = corr(E_t, E_{t+1}) > 0$$
+* El valor p es: $P(DW_1 < d1) \approx 0$, conduce al rechazo de $H_0$ en favor de $H_1$, por tanto en los dos modelos $\{E_t\}_{t \in Z^+}$ no es R.B pues presenta autocorrelación de orden 1 positiva.
+
+
 
 
 - gráficas de la ACF y PACF con bandas de Bartlett.
