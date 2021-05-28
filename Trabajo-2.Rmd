@@ -35,13 +35,33 @@ Datos20=read.table("anex-EMMET-dic2019-Fabricacion de otros productos quimicos (
 Datos20=ts(Datos20,freq=12,start=c(2001,1))
 ```
 
-
+# #d8576b
 
 ```{r, fig.height=5, fig.width=6}
+plot(Datos20, lwd=2, xlab="Tiempo", ylab = "Producción nominal", col = '#717D7E')
+grid()
+title(sub= '(a)')
+# title(main = "Índice de producción nominal \n del sector manufacturero (Colombia) \n", 
+#       sub = 'Clase industria: Otros productos químicos')
+```
+```{r}
+# Dispositivo JPEG
+jpeg(filename="Grafico3.jpeg",   # Nombre del archivo y extension
+     width = 20,    # Anchura
+     height = 20,   # Altura
+     res= 100,       # Resolucion 72ppi es un estandar
+     units = "cm")  # Unidades.
+
 plot(Datos20, lwd=2, xlab="Tiempo", ylab = "Producción nominal", col = "#d8576b")
 grid()
-title(main = "Serie")
+title(sub= '(a)')
+
+# Cerramos el dispositivo 
+dev.off()
+
 ```
+
+
 ```{r}
 require(forecast)
 ```
@@ -49,8 +69,7 @@ require(forecast)
 
 ```{r, fig.height=5, fig.width=6}
 par(bg='gray98')
-acf(Datos20,lag.max=36,ci.type="ma",col="cyan4", ci.col=2, lwd=2)
-title(main = 'Hola')
+acf(Datos20,lag.max=36,ci.type="ma",col="cyan4", ci.col=2, lwd=2, main = 'Procucción nominal')
 grid()
 ```
 
@@ -206,9 +225,9 @@ mod1_ajust <- ts(fitted(mod1), start  = c(2001,1), frequency = 12)
 
 
 ```{r, fig.height=5, fig.width=6}
-plot(Datos20)
-lines(mod1_ajust, col=2, lwd=2)
-legend("topleft", legend = c("Original", "Ajuste"), lty=1, col=c(1,2))
+plot(Datos20, ylab = 'Producción nominal', xlab = 'Tiempo', col = '#717D7E', lwd = 2)
+lines(mod1_ajust, col='#3498DB', lwd=2)
+legend("topleft", legend = c("Original", "Ajuste"), lty=1, col=c('#717D7E', '#3498DB'))
 grid()
 ```
 
@@ -217,6 +236,18 @@ grid()
 * pronósticos
 
 - Ecuación de pronóstico
+
+$$
+\hat{Y}_{216}(L) \approx 35.8242551 + 0.1319807 (216+L) + 0.0007051 (216+L)^2	\\ 
+- 3.1817818 I_{1,216+L} + 5.3069465 I_{2,216+L} + 12.0220423 I_{3,216+L} + 7.2690612 I_{4,216+L} + 12.1146698 I_{5,216+L} \\ + 9.8255350 I_{6,216+L} + 8.4294343 I_{7,216+L} + 9.0930346 I_{8,216+L}+ 12.5163357 I_{9,216+L}+ 10.5493377 I_{10,216+L}+ 8.9475962 I_{11,216+L}
+$$
+```{r}
+ytpron1 <- predict(mod1, newdata=data.frame(t=tnuevo, I1=I1n, I2=I2n, I3=I3n, I4=I4n, I5=I5n, I6=I6n, I7=I7n, I8=I8n, I9=I9n, I10=I10n, I11=I11n), interval="prediction")
+ytpron1 <- ts(ytpron1,freq=12,start=c(2019,1))
+ytpron1
+```
+
+
 
 - la tabla de pronósticos
 
@@ -251,6 +282,18 @@ RMSE & MAE & MAPE & Amplitud & Cobertura\\
 
 * Conclusión breve sobre la calidad del ajuste y de los pronósticos con este modelo
 
+
+* Gráfica de pronóstico
+
+```{r, fig.height=5, fig.width=6}
+plot(ytnuevo,lwd=2, col="#717D7E", type="b", pch=1, xlab="Periodo del año", ylab="")
+lines(ytpron1[,1],lwd=2, col="purple", type="b", pch=2)
+grid()
+legend("bottomright",legend=c("Real","Pronóstico del modelo global"),col=c("#717D7E","purple"),lwd=2, pch=1:2, cex=0.8)
+
+```
+
+
 # 3. Evaluación de supuesto de ruido blanco e identificación de procesos estocásticos sobre los errores estructurales del modelo global
 
 a) Validación de supuestos: Guarde los residuos estructurales $\hat{E}_t$ en la escala en que ajustó la serie. Analice inicialmente las gráficas de estos residuales en términos de los supuestos sobre los errores Et de media constante en cero, varianza constante y determine si hay ciclos evidentes no explicados o rachas en signos ±, qué concluye frente a la existencia de estos patrones. 
@@ -259,10 +302,11 @@ a) Validación de supuestos: Guarde los residuos estructurales $\hat{E}_t$ en la
 residuales <- residuals(mod1)
 ```
 
-```{r}
-plot(residuales, type = "l")
+```{r, fig.height=5, fig.width=6}
+plot(residuales, type = "l", xlab = 'Tiempo', ylab = 'Residuales', col = '#01588A', lwd = 1)
 abline(h=c(-2*summary(mod1)$sigma, 0, 2*summary(mod1)$sigma), col=2)
 abline(h = 0, col=2)
+grid()
 ```
 
 Realice las Pruebas de incorrelación con: 
@@ -297,11 +341,28 @@ rownames(teste)=lag; teste
 LB_result <- BP.LB.test(residuals(mod1),maxlag=36,type="Ljung")
 
 
-cbind("m" = seq(6, 36, 6), LB_result)  %>% 
-  kbl(col.names = c('$m$', '$Q_{LB}$', '$gl$', '$p(χ^2_{m} > Q_{LB})$'), row.names = F) %>% 
-  kable_classic(full_width = F) 
+# cbind("m" = seq(6, 36, 6), LB_result)  %>% 
+#   kbl(col.names = c('$m$', '$Q_{LB}$', '$gl$', '$p(χ^2_{m} > Q_{LB})$'), row.names = F) %>% 
+#   kable_classic(full_width = F) 
 
 ```
+
+```{r}
+xtable::xtable(LB_result)
+```
+
+$$\begin{array}{cccc}
+  \hline
+m & Q_{LB} & gl & p(\chi^2_{m} > Q_{LB}) \\ 
+  \hline
+6 & 161.91 & 6.00 & 0.00 \\ 
+  12 & 196.24 & 12.00 & 0.00 \\ 
+  18 & 216.31 & 18.00 & 0.00 \\ 
+  24 & 259.14 & 24.00 & 0.00 \\ 
+  30 & 315.97 & 30.00 & 0.00 \\ 
+  36 & 385.48 & 36.00 & 0.00 \\ 
+   \hline
+\end{array}$$
 
 - Durbin-Watson
 
@@ -318,10 +379,10 @@ names(res)=c("lag","rho estimado","Estadístico D-W",
 res
 }
 
-pruebaDW1(mod1) 
+# pruebaDW1(mod1) 
 
 
-xtable::xtable(pruebaDW1(mod1))
+# xtable::xtable(pruebaDW1(mod1))
 
 ```
 
@@ -354,11 +415,11 @@ $$H_0: \rho(1) = corr(E_t, E_{t+1}) = \phi_1 = 0 \text{ vs } H_1: \rho(1) = corr
 - gráficas de la ACF y PACF con bandas de Bartlett.
 
 ```{r, fig.height=5, fig.width=6}
-acf(residuales,lag.max=36,ci.type="ma",col="cyan4",ci.col=2, lwd=2)
+acf(residuales,lag.max=36,ci.type="ma",col="cyan4",ci.col=2, lwd=2, main = 'ACF de los residuales')
 ```
 
 ```{r, fig.height=5, fig.width=6}
-pacf(residuales,lag.max=36,col="cyan4",ci.col=2, lwd=2)
+pacf(residuales,lag.max=36,col="cyan4",ci.col=2, lwd=2, main = 'PACF de los residuales')
 ```
 
 Concluya sobre si los errores estructurales Et son ruido blanco o no y en este último caso, evalúe si por lo menos son estacionarios con media cero.
