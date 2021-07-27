@@ -662,7 +662,7 @@ ytf=ts(datos[tnuevo],freq=12,start=c(2001,1))
 
 
 
-* Paso 2) 
+* Paso 2) ajuste con validación cruzada) ajuste con validación cruzada
 
 Ajuste el modelo con función Arima de librería forecast
 
@@ -675,7 +675,7 @@ modelo2 <- Arima(yt,order=c(4,0,7),xreg=X,method="ML")
 ```
 
 
-* Paso 3) 
+* Paso 3) Tabla de parametros estimados
 
 Construya tabla completa de parámetros estimados, valores P corresponden a $𝑃(|𝑡_{n-k}| > |𝑇_0|)$, con $𝑘$ la suma del número de parámetros en las estructuras de tendencia, estacionalidad y errores ARMA.
 
@@ -703,7 +703,7 @@ coeftest(modelo2,df=dfmodelo2)
 ```
 
 
-* Paso 4) 
+* Paso 4) grafico de ajuste
 
 Obtenga gráfica del ajuste de la serie y de los residuales de ajuste $a_t$
 
@@ -745,7 +745,7 @@ abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2)
 ```
 
 
-* Paso 5) 
+* Paso 5)  Tabla de medidas de ajuste
 
 Cálculo de AIC y BIC, versión $exp(𝐶_n^∗ (𝑝))$ , con el número de parámetros $𝑘$ siendo la suma del número de parámetros en las estructuras de tendencia, estacionalidad y errores ARMA, previamente calculado en 3).
 
@@ -856,7 +856,7 @@ $$ Y_t=\beta_0+\beta_1t+\beta_2t^2+\sum_{i=1}^{11}\delta_iI_{i,t}+E_t, ~~ donde 
 El paso 1) no hay necesidad de repetirlo 
 
 
-Paso 2)
+Paso 2) ajuste con validación cruzada
 
 Ajuste el modelo con función Arima de librería forecast, además de hacer uso del argumento fixed indicando que parametros entran y cuales no 
 
@@ -981,7 +981,7 @@ $$ Y_t=\beta_0+\beta_1t+\beta_2t^2+\sum_{i=1}^{11}\delta_iI_{i,t}+E_t, ~~ donde 
 Ya esta listo!!!
 
 
-* Paso 2)
+* Paso 2) ajuste con validación cruzada
 
 
 ```{r}
