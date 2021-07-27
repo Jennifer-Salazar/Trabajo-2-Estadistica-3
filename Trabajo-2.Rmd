@@ -64,6 +64,7 @@ dev.off()
 
 ```{r}
 require(forecast)
+library(fANCOVA)
 ```
 
 
@@ -477,6 +478,9 @@ Jennifer: ARMA(4,7)
 Miguel: ARMA(4,7)
 
 (Colocar el modelo de un ARMA (4,7))
+
+
+$$E_t = \sum_{j=1}^{4} \phi_j E_{t-j} + a_t + \sum_{i=1}^{7} \theta_i a_{t-i}, ~~con~  \{a_t\}_{t\in Z^+} \text{un RB} \sim N(0, \sigma_a^2)$$
 
 Análisis con SelectModel()
 
