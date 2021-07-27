@@ -712,40 +712,40 @@ coeftest(modelo2,df=dfmodelo2)
 Obtenga gráfica del ajuste de la serie y de los residuales de ajuste $a_t$
 
 Para el modelo 1 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #Gráfico de la serie y su ajuste
 ythat1=modelo1$fitted #Este objeto ya tiene fechas
-plot(datos)
-lines(ythat1,col=2)
-legend("topleft",legend=c("datos","ajuste modelo1"),lty=1,col=1:2)
+plot(datos, col = "#717D7E", lwd=2)
+lines(ythat1,col="#3498DB", lwd=2)
+legend("topleft",legend=c("datos","ajuste modelo1"),lty=1,col= c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo1))
+plot(residuals(modelo1), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2)
-plot(as.numeric(modelo1$fitted),residuals(modelo1))
+abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2, col=2)
+plot(as.numeric(modelo1$fitted),residuals(modelo1), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2)
+abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2, col=2)
 ```
 
 
 
 Para el modelo 2
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #Gráfico de la serie y su ajuste
 ythat2=modelo2$fitted #Este objeto ya tiene fechas
-plot(datos)
-lines(ythat2,col=2)
-legend("topleft",legend=c("datos","ajuste modelo2"),lty=1,col=1:2)
+plot(datos, col = "#717D7E", lwd=2)
+lines(ythat2,col="#3498DB", lwd=2)
+legend("topleft",legend=c("datos","ajuste modelo2"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo2))
+plot(residuals(modelo2), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2)
-plot(as.numeric(modelo2$fitted),residuals(modelo2))
+abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2, col=2)
+plot(as.numeric(modelo2$fitted),residuals(modelo2), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2)
+abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2, col = 2)
 ```
 
 
@@ -780,20 +780,20 @@ Valide supuestos sobre el error de ajuste $a_t$
 
 para el modelo 1 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #ACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
 
-acf(as.numeric(residuals(modelo1)),ci.type="ma",lag.max=36,main="ACF modelo1",ci.col=2)
+acf(as.numeric(residuals(modelo1)),ci.type="ma",lag.max=36,main="ACF modelo1",ci.col=2, col="cyan4", lwd=2)
 
 #PACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
 
-pacf(as.numeric(residuals(modelo1)),lag.max=36,main="PACF modelo1",ci.col=2)
+pacf(as.numeric(residuals(modelo1)),lag.max=36,main="PACF modelo1",ci.col=2, col="cyan4", lwd=2)
 
 BP.LB.test(residuals(modelo1),maxlag=36,type="Ljung") #test Ljung-Box use máximo m igual al de ACF y PACF
 
 #Normalidad sobre residuales de ajuste en el modelo. Sólo si no se rechaza supuesto de ruido blanco
 shapiro.test(residuals(modelo1))
-qqnorm(residuals(modelo1),main="Gráfico de normalidad residuos de ajuste modelo1")
+qqnorm(residuals(modelo1),main="Gráfico de normalidad residuos de ajuste modelo1", col = "#01588A")
 qqline(residuals(modelo1),col=2)
 ```
 
@@ -801,19 +801,19 @@ qqline(residuals(modelo1),col=2)
 
 para el modelo 2 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #ACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-acf(as.numeric(residuals(modelo2)),ci.type="ma",lag.max=36,main="ACF modelo2",ci.col=2)
+acf(as.numeric(residuals(modelo2)),ci.type="ma",lag.max=36,main="ACF modelo2",ci.col=2, col="cyan4", lwd=2)
 
 #PACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-pacf(as.numeric(residuals(modelo2)),lag.max=36,main="PACF modelo2",ci.col=2)
+pacf(as.numeric(residuals(modelo2)),lag.max=36,main="PACF modelo2",ci.col=2, col="cyan4", lwd=2)
 
 
 BP.LB.test(residuals(modelo2),maxlag=36,type="Ljung") #test Ljung-Box use máximo m igual al de ACF y PACF
 
 #Normalidad sobre residuales de ajuste en el modelo. Sólo si no se rechaza supuesto de ruido blanco
 shapiro.test(residuals(modelo2))
-qqnorm(residuals(modelo2),main="Gráfico de normalidad residuos de ajuste modelo2")
+qqnorm(residuals(modelo2),main="Gráfico de normalidad residuos de ajuste modelo2", col= "#01588A")
 qqline(residuals(modelo2),col=2)
 ```
 
@@ -896,20 +896,20 @@ Obtenga gráfica del ajuste de la serie en escala original y de los residuales d
 
 Para el modelo 3
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #Gráfico de la serie y su ajuste
 ythat3=modelo3$fitted #Este objeto ya tiene fechas
-plot(datos)
-lines(ythat3,col=2)
-legend("topleft",legend=c("datos","ajuste modelo3"),lty=1,col=1:2)
+plot(datos, lwd=2, col = "#717D7E")
+lines(ythat3,col="#3498DB", lwd=2)
+legend("topleft",legend=c("datos","ajuste modelo3"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo3))
+plot(residuals(modelo3), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2)
-plot(as.numeric(modelo3$fitted),residuals(modelo3))
+abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2, col=2)
+plot(as.numeric(modelo3$fitted),residuals(modelo3), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2)
+abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2, col=2)
 ```
 
 
@@ -932,18 +932,18 @@ BICmodelo3
 Valide supuestos sobre el error de ajuste $𝑎_t$
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #ACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-acf(as.numeric(residuals(modelo3)),ci.type="ma",lag.max=36,main="ACF modelo3",ci.col=2)
+acf(as.numeric(residuals(modelo3)),ci.type="ma",lag.max=36,main="ACF modelo3",ci.col=2, lwd=2, col="cyan4")
 
 #PACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-pacf(as.numeric(residuals(modelo3)),lag.max=36,main="PACF modelo3",ci.col=2)
+pacf(as.numeric(residuals(modelo3)),lag.max=36,main="PACF modelo3",ci.col=2, lwd=2, col="cyan4")
 
 BP.LB.test(residuals(modelo3),maxlag=36,type="Ljung") #test Ljung-Box use máximo m igual al de ACF y PACF
 
 #Normalidad sobre residuales de ajuste en el modelo. Sólo si no se rechaza supuesto de ruido blanco
 shapiro.test(residuals(modelo3))
-qqnorm(residuals(modelo3),main="Gráfico de normalidad residuos de ajuste modelo3")
+qqnorm(residuals(modelo3),main="Gráfico de normalidad residuos de ajuste modelo3", col = "#01588A")
 qqline(residuals(modelo3),col=2)
 ```
 
@@ -1009,22 +1009,22 @@ coeftest(modelo4,df=dfmodelo4)
 * Paso 4)
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 ythat4=modelo4$fitted #este objeto ya queda con las fechas de la serie
 
 #Gráfico de la serie y su ajuste
-plot(datos)
-lines(ythat4,col=2)
-legend("topleft",legend=c("datos","ajuste modelo4"),lty=1,col=1:2)
+plot(datos, col = "#717D7E", lwd=2)
+lines(ythat4,col="#3498DB", lwd=2)
+legend("topleft",legend=c("datos","ajuste modelo4"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo4))
+plot(residuals(modelo4), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2)
+abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2, col=2)
 
-plot(as.numeric(modelo4$fitted),residuals(modelo4))
+plot(as.numeric(modelo4$fitted),residuals(modelo4), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2)
+abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2, col=2)
 
 
 ```
@@ -1043,19 +1043,19 @@ BICmodelo4
 * Paso 6)
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 #ACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-acf(as.numeric(residuals(modelo4)),ci.type="ma",lag.max=36,main="ACF modelo4",ci.col=2)
+acf(as.numeric(residuals(modelo4)),ci.type="ma",lag.max=36,main="ACF modelo4",ci.col=2, lwd=2, col="cyan4")
 
 #PACF sobre residuales de ajuste en el modelo. Use valor para m el que se indica en la guía del trabajo
-pacf(as.numeric(residuals(modelo4)),lag.max=36,main="PACF modelo4",ci.col=2)
+pacf(as.numeric(residuals(modelo4)),lag.max=36,main="PACF modelo4",ci.col=2, lwd=2, col="cyan4")
 
 
 BP.LB.test(residuals(modelo4),maxlag=36,type="Ljung") #test Ljung-Box use máximo m igual al de ACF y PACF
 
 #Normalidad sobre residuales de ajuste en el modelo. Sólo si no se rechaza supuesto de ruido blanco
 shapiro.test(residuals(modelo4))
-qqnorm(residuals(modelo4),main="Gráfico de normalidad residuos de ajuste modelo4")
+qqnorm(residuals(modelo4),main="Gráfico de normalidad residuos de ajuste modelo4", col= "#01588A")
 qqline(residuals(modelo4),col=2)
 ```
 
@@ -1090,7 +1090,7 @@ ytpronmodelo4
 
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 plot(ytf,lwd=2, col=1, type="b", pch=1, xlab="Periodo del año", ylab="", ylim = c(85, 120))
 lines(ytpronmodelo1,lwd=2, col=2, type="b", pch=2)
 lines(ytpronmodelo2,lwd=2, col=3, type="b", pch=3)
@@ -1207,10 +1207,10 @@ mod_local_ajust <- mod_local_Tt + St # Ajuste D&LC(AICC)
 ```
 
 
-```{r}
-plot(Datos20)
-lines(mod_local_ajust, col=2, lwd=2)
-legend("topleft", legend = c("Original", "Ajuste D&LC(AICC)"), lty=1, col=c(1,2))
+```{r, fig.height=5, fig.width=6}
+plot(Datos20, col = "#717D7E", lwd=2)
+lines(mod_local_ajust, col="#3498DB", lwd=2)
+legend("topleft", legend = c("Original", "Ajuste D&LC(AICC)"), lty=1, col=c("#717D7E", "#3498DB"))
 
 ```
 
@@ -1232,22 +1232,22 @@ BIC_local
 
 Gráficos de residuales 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 # Residuales vs tiempo mod3
 df=n-(round(mod_local$enp)+s-1) #Grados de libertad aproximados del ajuste total
 MSE_local=sum(et_local^2)/df #MSE aproximado del ajuste total del modelo 3
-plot(et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)))
+plot(et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)), col = "#01588A")
 abline(h=c(-2*sqrt(MSE_local),0,2*sqrt(MSE_local)),col=2)
-legend("topleft", legend=c("Modelo local"), lty=1, col = 1, lwd=2)
+legend("topleft", legend=c("Modelo local"), lty=1, col = "#01588A", lwd=2)
 
 ```
 
 
 
-```{r}
-plot(as.numeric(mod_local_ajust),et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)))
+```{r, fig.height=5, fig.width=6}
+plot(as.numeric(mod_local_ajust),et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)), col= "#01588A")
 abline(h=c(-2*sqrt(MSE_local),0,2*sqrt(MSE_local)),col=2)
-legend("topleft", legend=c("Modelo local"), lty=1, col = 1, lwd=2,cex = 0.8)
+legend("topleft", legend=c("Modelo local"), lty=1, col = "#01588A", lwd=2,cex = 0.8)
 ```
 
 
@@ -1288,9 +1288,9 @@ pacf(et_local,lag.max=36,col="cyan4",ci.col=2, lwd=2, main = 'PACF de los residu
 
 
 
-```{r}
+```{r, fig.height=5, fig.width=6}
 shapiro.test(et_local)
-qqnorm(et_local,main="Gráfico de normalidad residuos de ajuste modelo1")
+qqnorm(et_local,main="Gráfico de normalidad residuos de ajuste modelo1", col = "#01588A")
 qqline(et_local,col=2)
 ```
 
