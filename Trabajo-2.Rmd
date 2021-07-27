@@ -657,7 +657,7 @@ t2nuevo=tnuevo^2
 Indicadorasnuevo=seasonaldummy(yt,h=12) 
 
 Xnuevo=cbind(t=tnuevo,t2=t2nuevo,Indicadoras=Indicadorasnuevo) #matriz predictores en el pronóstico
-ytf=ts(datos[tnuevo],freq=12,start=c(2001,1)) 
+ytf=ts(datos[tnuevo],freq=12,start=c(2019,1)) 
 ```
 
 
@@ -823,7 +823,7 @@ Pronósticos para la validación cruzada (en este ejemplo se asume 12 pronóstic
 Para el modelo 1 
 
 ```{r}
-predmodelo1=ts(as.data.frame(forecast(modelo1,xreg=Xnuevo,level=95)),freq=12, start=c(2001,1))
+predmodelo1=ts(as.data.frame(forecast(modelo1,xreg=Xnuevo,level=95)),freq=12, start=c(2019,1))
 predmodelo1
 ytpronmodelo1=predmodelo1[,1] #Tomando el pronóstico puntual. Este objeto tiene fechas
 
@@ -953,7 +953,7 @@ Pronósticos para la validación cruzada (en este ejemplo se asume 12 pronóstic
 Para el modelo 3 
 
 ```{r}
-predmodelo3=ts(as.data.frame(forecast(modelo3,xreg=Xnuevo,level=95)),freq=12, start=c(2001,1))
+predmodelo3=ts(as.data.frame(forecast(modelo3,xreg=Xnuevo,level=95)),freq=12, start=c(2019,1))
 predmodelo3
 ytpronmodelo3=predmodelo3[,1] #Tomando el pronóstico puntual. Este objeto tiene fechas
 
@@ -1061,7 +1061,7 @@ qqline(residuals(modelo4),col=2)
 
 ```{r}
 #Cálculo del pronóstico con I.P del 95%, en escala original
-predmodelo4=ts(as.data.frame(forecast(modelo4,xreg=Xnuevo,level=95)),freq=12, start=c(2001,1))
+predmodelo4=ts(as.data.frame(forecast(modelo4,xreg=Xnuevo,level=95)),freq=12, start=c(2019,1))
 predmodelo4
 ytpronmodelo4=predmodelo4[,1] #Tomando el pronóstico puntual. Este objeto tiene fechas
 #Medidas precisión pronósticos
@@ -1074,8 +1074,219 @@ cobertura(real=ytf,LIP=predmodelo4[,2],LSP=predmodelo4[,3])
 
 
 
+grafica comparativa de los valores reales y pronosticos puntuales
+
+```{r}
+ytpronmodelo1
+ytpronmodelo2
+ytpronmodelo3
+ytpronmodelo4
+```
 
 
 
 
+```{r}
+plot(ytf,lwd=2, col=1, type="b", pch=1, xlab="Periodo del año", ylab="", ylim = c(85, 120))
+lines(ytpronmodelo1,lwd=2, col=2, type="b", pch=2)
+lines(ytpronmodelo2,lwd=2, col=3, type="b", pch=3)
+lines(ytpronmodelo3,lwd=2,col=4, type="b", pch=4)
+lines(ytpronmodelo4,lwd=2,col=5, type="b", pch=5)
+grid()
+legend("bottomright",legend=c("Real","AR(16)", "ARMA(4,7)", "ARMA(16,17)", "ARMA(3,6)(1,1)[12]"),col=1:5,lwd=2, pch=1:5, cex=0.8)
+```
+
+
+
+# Todo sobre el modelo local 
+
+## Funciones a utilizar:
+
+```{r}
+#Creando función para extraer correctamente estimaciones de los efectos estacionales 𝜹𝒊 por filtro de descomposición
+factoresdeltai=function(descom,s,estacionini){
+if(estacionini==1){
+deltasi=descom$figure
+}
+if(estacionini!=1){
+j=estacionini;deltasi=c(descom$figure[(s-j+2):s],descom$figure[1:(s-j+1)])
+}
+deltasi
+}
+```
+
+
+## Ajuste modelo 3 Descomposición aditiva & Loess cuadrático
+
+
+```{r}
+#Descomposición aditiva de la serie recortada
+descom=decompose(yt,type="additive")
+
+s=12 #Longitud del periodo estacional
+
+#Componente estacional estimada de la descomposición de la serie recortada
+St=descom$seasonal
+
+
+deltas_i=factoresdeltai(descom=descom,s=12,estacionini=1) #Obteniendo los s factores estacionales estimados
+
+
+#el período es s=12 y la serie arranca en estación 1
+deltas <- data.frame(deltas_i)
+
+```
+
+En la Tabla se muestra la estimación de los efectos estacionales de acuerdo al filtro de la descomposición aditiva sobre los primeros 216 datos
+
+$$\begin{array}{| c | c | c | c| c |}
+\hline
+i& \hat{\delta}_i\\
+\hline
+1&-10.8780433\\
+2&-2.3143178\\
+3&4.3650940\\
+4&-0.5319649\\
+5&4.3979371\\
+6&2.0783292\\
+7&0.7969567\\
+8&1.2373979\\
+9&4.6148489\\
+10&2.5229371\\
+11&1.0633783\\
+12&-7.3525531\\
+\hline
+suma & 0\\
+\hline
+\end{array}$$
+
+
+
+```{r}
+#Pronósticos para la componente estacional usando estimaciones del filtro de descomposición clásica
+
+#los pronósticos inician en enero 2019 y terminan en diciembre 2019
+
+i=c(1,2,3,4,5,6,7,8,9,10,11,12) #identificando la estación correspondiente a los m=12 períodos de pronósticos
+```
+
+
+
+
+```{r}
+Stnuevo=deltas_i[i] #Asignando el valor de St a los periodos a pronosticar
+Stnuevo=ts(Stnuevo,frequency=12,start=c(2019,1)) #convirtiendo en serie de tiempo al pronóstico de St
+Stnuevo
+```
+
+```{r}
+#Desestacionalizando o ajustando estacionalmente a la serie recortada, según modelo aditivo
+ytd=yt-St
+```
+
+
+
+```{r}
+#LOESS cuadrático (AICC) sobre serie desestacionalizada
+mod_local=loess.as(t,ytd,degree=2,criterion="aicc",family="gaussian",plot=F)
+summary(mod_local)
+alfa.optim=mod_local$pars$span #guardando el valor óptimo del parámetro alfa
+```
+
+
+
+Gráfica de ajuste 
+
+```{r}
+mod_local_Tt <- ts(fitted(mod_local), start  = c(2001,1), frequency = 12)
+mod_local_ajust <- mod3_Tt + St # Ajuste D&LC(AICC)
+```
+
+
+```{r}
+plot(Datos20)
+lines(mod_local_ajust, col=2, lwd=2)
+legend("topleft", legend = c("Original", "Ajuste D&LC(AICC)"), lty=1, col=c(1,2))
+
+```
+
+
+
+AIC y BIC modelo local 
+
+```{r}
+et_local <- yt - mod_local_ajust
+
+p_local <- round(mod_local$enp)+s-1
+AIC_local <- exp(crit.inf.resid(residuales=et_local,n.par=p_local))
+BIC_local <- exp(crit.inf.resid(residuales=et_local,n.par=p_local,AIC="FALSE"))
+
+AIC_local
+BIC_local
+```
+
+
+Gráficos de residuales 
+
+```{r}
+# Residuales vs tiempo mod3
+df=n-(round(mod_local$enp)+s-1) #Grados de libertad aproximados del ajuste total
+MSE_local=sum(et_local^2)/df #MSE aproximado del ajuste total del modelo 3
+plot(et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)))
+abline(h=c(-2*sqrt(MSE_local),0,2*sqrt(MSE_local)),col=2)
+legend("topleft", legend=c("Modelo local"), lty=1, col = 1, lwd=2)
+
+```
+
+
+
+```{r}
+plot(as.numeric(mod_local_ajust),et_local,ylim=c(min(-2*sqrt(MSE_local),et_local),max(2*sqrt(MSE_local),et_local)))
+abline(h=c(-2*sqrt(MSE_local),0,2*sqrt(MSE_local)),col=2)
+legend("topleft", legend=c("Modelo local"), lty=1, col = 1, lwd=2,cex = 0.8)
+```
+
+
+
+
+Pronosticos y medidas de pronosticos 
+
+
+```{r}
+#Pronósticos de la tendencia por loess cuadrático óptimo (AICC)
+Ttnuevo_local <- predict(loess(ytd~t,span=alfa.optim,degree=2,control=loess.control(surface="direct")),
+data.frame(t=tnuevo),se=FALSE)
+Ttnuevo_local <- ts(Ttnuevo_local,freq=12,start=c(2019,1)) #convirtiendo en serie de tiempo al pronóstico de Tt, modelo 3
+ytpron_local <- Ttnuevo_local + Stnuevo #Pronóstico puntual Modelo 2
+#Tabla con pronósticos de las componentes y de la serie, Modelo 2
+tablapron_local <- cbind(Pron_Tt=Ttnuevo_local, Pron_St=Stnuevo,Pron_serie=ytpron_local)
+tablapron_local
+```
+
+
+
+```{r}
+accuracy(ytpron_local,ytnuevo)
+```
+
+
+ACF y PACF 
+
+
+```{r, fig.height=5, fig.width=6}
+acf(et_local,lag.max=36,ci.type="ma",col="cyan4",ci.col=2, lwd=2, main = 'ACF de los residuales')
+```
+
+
+```{r, fig.height=5, fig.width=6}
+pacf(et_local,lag.max=36,col="cyan4",ci.col=2, lwd=2, main = 'PACF de los residuales')
+```
+
+
+
+```{r}
+shapiro.test(et_local)
+qqnorm(et_local,main="Gráfico de normalidad residuos de ajuste modelo1")
+qqline(et_local,col=2)
+```
 
