@@ -770,7 +770,7 @@ AICmodelo2
 BICmodelo2
 ```
 
-* Punto 6)
+* Paso 6)
 
 Valide supuestos sobre el error de ajuste $a_t$
 
@@ -836,7 +836,7 @@ cobertura(real=ytf,LIP=predmodelo1[,2],LSP=predmodelo1[,3])
 Para el modelo 2 
 
 ```{r}
-predmodelo2=ts(as.data.frame(forecast(modelo2,xreg=Xnuevo,level=95)),freq=12, start=c(2001,1))
+predmodelo2=ts(as.data.frame(forecast(modelo2,xreg=Xnuevo,level=95)),freq=12, start=c(2019,1))
 predmodelo2
 ytpronmodelo2=predmodelo2[,1] #Tomando el pronóstico puntual. Este objeto tiene fechas
 
@@ -1199,7 +1199,7 @@ Gráfica de ajuste
 
 ```{r}
 mod_local_Tt <- ts(fitted(mod_local), start  = c(2001,1), frequency = 12)
-mod_local_ajust <- mod3_Tt + St # Ajuste D&LC(AICC)
+mod_local_ajust <- mod_local_Tt + St # Ajuste D&LC(AICC)
 ```
 
 
