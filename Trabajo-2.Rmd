@@ -1439,3 +1439,31 @@ qqnorm(et_local,main="Gráfico de normalidad residuos de ajuste modelo1", col = 
 qqline(et_local,col=2)
 ```
 
+
+
+## Tabla de medidas de ajuste de los 4 modelos
+
+
+```{r}
+AIC <- c(AICmodelo1, AICmodelo2, AICmodelo4, AICmodelo3)
+BIC <- c(BICmodelo1, BICmodelo2, BICmodelo4, BICmodelo3)
+modelo <- c("Modelo 1", "Modelo 2", "Modelo 3", "Modelo 4")
+
+data_ajuste <- cbind(modelo, AIC = round(AIC,3), BIC = round(BIC,3))
+data_ajuste
+```
+
+
+
+$$
+\begin{array}{|c|c|c|}
+\hline
+Modelo&AIC&BIC\\   
+\hline
+Modelo~1 &11.266 &18.003\\
+Modelo~2 &10.953 &16.188\\
+Modelo~3 &11.252 &16.631\\
+Modelo~4 &11.246 &15.614\\
+\hline
+\end{array}
+$$
