@@ -308,10 +308,13 @@ plot(residuals(mod1), type = "l", xlab = 'Tiempo', ylab = 'Residuales', col = '#
 abline(h=c(-2*summary(mod1)$sigma, 0, 2*summary(mod1)$sigma), col=2)
 abline(h = 0, col=2)
 grid()
+legend("bottomright", legend = "Modelo Global", lty = 1, col = '#01588A')
 
-plot(as.numeric(mod1$fitted),residuals(mod1), col = "#01588A")
+plot(as.numeric(mod1$fitted),residuals(mod1), xlab = 'Valores Ajustados', ylab = 'Residuales',col = "#01588A")
 abline(h=0)
 abline(h=c(-2*summary(mod1)$sigma,2*summary(mod1)$sigma), col = 2)
+grid()
+legend("bottomright", legend = "Modelo Global", lty = 1, col = '#01588A')
 ```
 
 Realice las Pruebas de incorrelación con: 
@@ -799,15 +802,19 @@ ythat1=modelo1$fitted #Este objeto ya tiene fechas
 plot(datos, col = "#717D7E", lwd=2)
 lines(ythat1,col="#3498DB", lwd=2)
 grid()
-legend("topleft",legend=c("Origina","Ajuste modelo 1"),lty=1,col= c("#717D7E", "#3498DB"))
+legend("topleft",legend=c("Original","Ajuste modelo 1"),lty=1,col= c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo1), col = "#01588A")
+plot(residuals(modelo1), xlab = "Tiempo", ylab = "Residuales", col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2, col=2)
-plot(as.numeric(modelo1$fitted),residuals(modelo1), col = "#01588A")
+abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 1", col = "#01588A", lty = 1)
+plot(as.numeric(modelo1$fitted),xlab = "Valores ajustados", ylab = "Residuales", residuals(modelo1), col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=2, col=2)
+abline(h=c(-2*sqrt(modelo1$sigma2),2*sqrt(modelo1$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 1", col = "#01588A",lty = 1)
 ```
 
 
@@ -823,12 +830,17 @@ grid()
 legend("topleft",legend=c("Original","Ajuste modelo 2"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo2), col = "#01588A")
+plot(residuals(modelo2), xlab = "Tiempo", ylab = "Residuales",col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2, col=2)
-plot(as.numeric(modelo2$fitted),residuals(modelo2), col = "#01588A")
+abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 2", col = "#01588A", lty = 1)
+
+plot(as.numeric(modelo2$fitted),residuals(modelo2),xlab = "Valores Ajustados", ylab = "Residuales", col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=2, col = 2)
+abline(h=c(-2*sqrt(modelo2$sigma2),2*sqrt(modelo2$sigma2)),lty=1, col = 2)
+grid()
+legend("bottomright", legend = "Modelo2", col = "#01588A", lty = 1)
 ```
 
 
@@ -878,6 +890,7 @@ BP.LB.test(residuals(modelo1),maxlag=36,type="Ljung") #test Ljung-Box use máxim
 shapiro.test(residuals(modelo1))
 qqnorm(residuals(modelo1),main="Gráfico de normalidad residuos de ajuste modelo1", col = "#01588A")
 qqline(residuals(modelo1),col=2)
+grid()
 ```
 
 
@@ -898,6 +911,7 @@ BP.LB.test(residuals(modelo2),maxlag=36,type="Ljung") #test Ljung-Box use máxim
 shapiro.test(residuals(modelo2))
 qqnorm(residuals(modelo2),main="Gráfico de normalidad residuos de ajuste modelo2", col= "#01588A")
 qqline(residuals(modelo2),col=2)
+grid()
 ```
 
 
@@ -1017,12 +1031,16 @@ grid()
 legend("topleft",legend=c("Original","Ajuste modelo 4"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo3), col = "#01588A")
+plot(residuals(modelo3), xlab = "Tiempo", ylab = "Residuales", col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2, col=2)
-plot(as.numeric(modelo3$fitted),residuals(modelo3), col = "#01588A")
+abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 4", col = "#01588A", lty = 1)
+plot(as.numeric(modelo3$fitted),residuals(modelo3),xlab = "Valores Ajustados", ylab = "Residuales", col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=2, col=2)
+abline(h=c(-2*sqrt(modelo3$sigma2),2*sqrt(modelo3$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 4", col = "#01588A", lty = 1)
 ```
 
 
@@ -1058,6 +1076,7 @@ BP.LB.test(residuals(modelo3),maxlag=36,type="Ljung") #test Ljung-Box use máxim
 shapiro.test(residuals(modelo3))
 qqnorm(residuals(modelo3),main="Gráfico de normalidad residuos de ajuste modelo3", col = "#01588A")
 qqline(residuals(modelo3),col=2)
+grid()
 ```
 
 
@@ -1171,13 +1190,17 @@ grid()
 legend("topleft",legend=c("Original","Ajuste modelo 3"),lty=1,col=c("#717D7E", "#3498DB"))
 
 #Gráficos de residuales
-plot(residuals(modelo4), col = "#01588A")
+plot(residuals(modelo4), xlab = "Tiempo", ylab = "Residuales", col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2, col=2)
+abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 3", col = "#01588A", lty = 1)
 
-plot(as.numeric(modelo4$fitted),residuals(modelo4), col = "#01588A")
+plot(as.numeric(modelo4$fitted),residuals(modelo4), xlab = "Tiempo", ylab = "Residuales" ,col = "#01588A")
 abline(h=0)
-abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=2, col=2)
+abline(h=c(-2*sqrt(modelo4$sigma2),2*sqrt(modelo4$sigma2)),lty=1, col=2)
+grid()
+legend("bottomright", legend = "Modelo 3", col = "#01588A", lty = 1)
 
 
 ```
