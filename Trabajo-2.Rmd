@@ -1178,6 +1178,33 @@ Parámetros&Estimación&s.e&Valor~T_0&P(|t_{25}|>|T_0|)\\
 $$
 
 
+## Ecuación de ajuste
+
+$$\hat{Y}_t = 35.697+0.138t+0.00067t^2-3.2566I_{1,t}+5.0433I_{2,t}+11.9337I_{3,t}+7.2003I_{4,t}+11.959I_{5,t}+9.8084I_{6,t}+8.3302I_{7,t}+8.9614I_{8,t}+12.5244I_{9,t}+10.4694I_{10,t}+8.8527I_{11,t} + \widehat{\widehat{E}}_t$$
+
+$$\widehat{\widehat{E}}_t = -0.284 \widehat{E}_{t-1} + 0.0045 \widehat{E}_{t-2} + 0.8689 \widehat{E}_{t-3}-0.6633\widehat{E}_{t-12}-(-0.2840 \times -0.6633) \widehat{E}_{t-13}-(0.0045 \times -0.6633) \widehat{E}_{t-14} - (0.8689 \times -0.6633)\widehat{E}_{t-15}+0.5544\widehat{a}_{t-1}+0.5502\widehat{a}_{t-2}-0.4316\widehat{a}_{t-3}+0.0186\widehat{a}_{t-4}-0.2003\widehat{a}_{t-5}-0.092\widehat{a}_{t-6}+0.7189\widehat{a}_{t-12}+(0.5544 \times 0.7189) \widehat{a}_{t-13} +(0.5502 \times 0.7189) \widehat{a}_{t-14}+(-0.4316 \times 0.7189) \widehat{a}_{t-15} +(0.0186 \times 0.7189) \widehat{a}_{t-16} +(-0.2003 \times 0.7189) \widehat{a}_{t-17}+(-0.092 \times 0.7189) \widehat{a}_{t-18}$$
+
+
+## Ecuación de pronóstico
+
+
+$$\hat{Y}_{216}(L) = 35.697+0.138(216+L)+0.00067(216+L)^2-3.2566I_{1,216+L}+5.0433I_{2,216+L}+11.9337I_{3,216+L}+7.2003I_{4,216+L}+11.959I_{5,216+L}+9.8084I_{6,216+L}+8.3302I_{7,216+L}+8.9614I_{8,216+L}+12.5244I_{9,216+L}+10.4694I_{10,216+L}+8.8527I_{11,216+L} + \wideha(216+L){\wideha(216+L){E}}_(216+L)$$
+
+$$\widehat{E}_{216}(L) = -0.284 \widehat{E}_{216}(L-1) + 0.0045 \widehat{E}_{216}(L-2) + 0.8689 \widehat{E}_{216}(L-3) - 0.6633\widehat{E}_{216}(L-12)-(-0.2840 \times -0.6633) \widehat{E}_{216}(L-13) - (0.0045 \times -0.6633) \widehat{E}_{216}(L-14) - (0.8689 \times -0.6633) \widehat{E}_{216}(L-15)+0.5544\widehat{a}_{216}(L-1)+0.5502\widehat{a}_{216}(L-2)-0.4316\widehat{a}_{216}(L-3)+0.0186\widehat{a}_{216}(L-4)-0.2003\widehat{a}_{216}(L-5)-0.092\widehat{a}_{216}(L-6)+0.7189\widehat{a}_{216}(L-12)+(0.5544 \times 0.7189) \widehat{a}_{216}(L-13)+(0.5502 \times 0.7189) \widehat{a}_{216}(L-14)+(-0.4316 \times 0.7189) \widehat{a}_{216}(L-15) +(0.0186 \times 0.7189) \widehat{a}_{216}(L-16) +(-0.2003 \times 0.7189) \widehat{a}_{216}(L-17)+(-0.092 \times 0.7189) \widehat{a}_{216}(L-18)$$
+
+$$\widehat{E}_{216}(L-j)= \left\{ \begin{array}{lcc}
+             Residuo~estructural~\widehat{E}_{216+L-j} &   si  & L-j \leq 0 \\
+             Pronóstico~de~los~ciclos~L-j~periodos~después~de~t=216 &  si & L-j>0 
+             \end{array}
+   \right.$$
+   
+   
+$$\widehat{a}_{216}(L-i)= \left\{ \begin{array}{lcc}
+             Residuo~de~ajuste~\widehat{a}_{216+L-i} &   si  & L-i \leq 0 \\
+             0, ~~ El~pronóstico~del~R.B.~L-i~~periodos~después~de~t=216 &  si & L-i>0 
+             \end{array}
+   \right.$$
+
 
 * Paso 4)
 
@@ -1269,13 +1296,14 @@ ytpronmodelo4
 
 
 ```{r, fig.height=5, fig.width=6}
-plot(ytf,lwd=2, col=1, type="b", pch=1, xlab="Periodo del año", ylab="", ylim = c(85, 120))
-lines(ytpronmodelo1,lwd=2, col=2, type="b", pch=2)
-lines(ytpronmodelo2,lwd=2, col=3, type="b", pch=3)
-lines(ytpronmodelo3,lwd=2,col=4, type="b", pch=4)
+plot(ytf,lwd=2, col=1, type="b", pch=1, xlab="Periodo del año", ylim = c(85, 120), ylab = "Producción nominal")
+lines(ytpron1[,1], lwd = 2, col=2, type = "b", pch = 2)
+lines(ytpronmodelo1,lwd=2, col=3, type="b", pch=3)
+lines(ytpronmodelo2,lwd=2, col=4, type="b", pch=4)
 lines(ytpronmodelo4,lwd=2,col=5, type="b", pch=5)
+lines(ytpronmodelo3,lwd=2,col=6, type="b", pch=6)
 grid()
-legend("bottomright",legend=c("Real","AR(16)", "ARMA(4,7)", "ARMA(16,17)", "ARMA(3,6)(1,1)[12]"),col=1:5,lwd=2, pch=1:5, cex=0.8)
+legend("bottomright",legend=c("Serie original","Pronósticos Modelo global", "Pronósticos Modelo 1", "Pronósticos Modelo 2", "Pronósticos Modelo 3", "Pronósticos Modelo 4"),col=1:6,lwd=2, pch=1:6, cex=0.8)
 ```
 
 
